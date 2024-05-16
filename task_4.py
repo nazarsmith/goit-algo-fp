@@ -45,46 +45,20 @@ def draw_tree(tree_root):
 def draw_heap(nx_tree, root):
     nodes = [node[-1]["label"] for node in nx_tree.nodes(data = True)]
     heapq.heapify(nodes)
-    root = Node(nodes[0])
 
-    ## helper function to add nodes to a heap and draw it afterward
-    def add_item(root, item: Node):
-
-        if root.balance == 0:
-            root.left = item
-            root.balance += 1
-
-        elif root.balance == 1:
-            root.right = item
-            root.balance += 1
-        
-        elif root.left.balance == 0:
-            root.left = add_item(root.left, item)
-            
-        elif root.left.balance == 1:
-            root.left.right = item
-            root.left.balance += 1
-        
-        elif root.right.balance == 0:
-            root.right = add_item(root.right, item)
-        
-        elif root.right.balance == 1:
-            root.right.right = item
-            root.right.balance += 1
-
-        else:
-            root.left = add_item(root.left, item)
-        return root
-
+    new_tree = []
     for i in range(len(nodes)):
-        if i * 2 + 1 <= len(nodes) - 1:
-            root = add_item(root, Node(nodes[i * 2 + 1]))
-        if i * 2 + 2 <= len(nodes) - 1:
-            root = add_item(root, Node(nodes[i * 2 + 2]))
+        new_tree.append(Node(nodes[i]))
+
+    for i in range(len(new_tree)):
+        if i * 2 + 1 <= len(new_tree) - 1:
+            new_tree[i].left = new_tree[i * 2 + 1]
+        if i * 2 + 2 <= len(new_tree) - 1:
+            new_tree[i].right = new_tree[i * 2 + 2]
 
     tree = nx.DiGraph()
-    pos = {root.id: (0, 0)}
-    tree = add_edges(tree, root, pos)
+    pos = {new_tree[0].id: (0, 0)}
+    tree = add_edges(tree, new_tree[0], pos)
     colors = [node[1]['color'] for node in tree.nodes(data=True)]
     labels = {node[0]: node[1]['label'] for node in tree.nodes(data=True)}  # Використовуйте значення вузла для міток
 

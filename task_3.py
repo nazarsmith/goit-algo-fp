@@ -48,76 +48,47 @@ un_graph_props = graph_workshop.get_graph_properties(un_graph)
 nodes, graph = graph_workshop.aggregate_properties(un_graph, un_graph_props)
 
 def draw_heap(nodes):
-    
-    root = Node(nodes[0])
+    # build min heap
+    h = []
+    for value in nodes:
+        heapq.heappush(h, value)
+    nodes = [heapq.heappop(h) for _ in range(len(h))]
 
-    ## helper function to add nodes to a heap and draw it afterward
-    def add_item(root, item):
-
-        if root.balance == 0:
-            root.left = item
-            root.balance += 1
-
-        elif root.balance == 1:
-            root.right = item
-            root.balance += 1
-        
-        elif root.left.balance == 0:
-            root.left = add_item(root.left, item)
-            
-        elif root.left.balance == 1:
-            root.left.right = item
-            root.left.balance += 1
-        
-        elif root.right.balance == 0:
-            root.right = add_item(root.right, item)
-        
-        elif root.right.balance == 1:
-            root.right.right = item
-            root.right.balance += 1
-
-        else:
-            root.left = add_item(root.left, item)
-        return root
-
+    # create a binary min heap and draw it
+    new_tree = []
     for i in range(len(nodes)):
-        if i * 2 + 1 <= len(nodes) - 1:
-            root = add_item(root, Node(nodes[i * 2 + 1]))
-        if i * 2 + 2 <= len(nodes) - 1:
-            root = add_item(root, Node(nodes[i * 2 + 2]))
+        new_tree.append(Node(nodes[i]))
+
+    for i in range(len(new_tree)):
+        if i * 2 + 1 <= len(new_tree) - 1:
+            new_tree[i].left = new_tree[i * 2 + 1]
+        if i * 2 + 2 <= len(new_tree) - 1:
+            new_tree[i].right = new_tree[i * 2 + 2]
 
     tree = nx.DiGraph()
-    pos = {root.id: (0, 0)}
-    tree = add_edges(tree, root, pos)
+    pos = {new_tree[0].id: (0, 0)}
+    tree = add_edges(tree, new_tree[0], pos)
     colors = [node[1]['color'] for node in tree.nodes(data=True)]
     labels = {node[0]: node[1]['label'] for node in tree.nodes(data=True)}  # Використовуйте значення вузла для міток
 
     plt.figure(figsize=(8, 5))
     nx.draw(tree, pos=pos, labels=labels, arrows=False, node_size=2500, node_color=colors)
     plt.show()
-    return root, tree
-
-## Task 2
-# bfs_tree_edges = list(graph_workshop.bfs(un_graph, 11).edges())
-# dfs_tree_edges = list(graph_workshop.dfs(un_graph, 11).edges())
-
-# print("\nTask 2:\n")
-# print("BFS results:", bfs_tree_edges)
-# print("DFS results:", dfs_tree_edges)
-
-# graph_workshop.draw_dbfs_tree(bfs_tree_edges)
-# graph_workshop.draw_dbfs_tree(dfs_tree_edges)
-
+    return labels, new_tree, tree
 
 ## Task 3
 print("\nTask 3:\n")
 nodes = list(un_graph.nodes())
 heapq.heapify(nodes)
-print(nodes)
-draw_heap(nodes[:20])
 
-leafs = un_graph_props["leaf_nodes"]
-print(leafs)
+labels, _, tree = draw_heap(nodes)
+leafs = []
+for node in tree.degree():
+    if node[-1] <= 1:
+        leafs.append(labels[node[0]])
+
+print("Leaves", leafs)
+
 for i in range(len(leafs) - 1):
     print(
         f"Shortest path from {leafs[i]} to {leafs[i + 1]}:",

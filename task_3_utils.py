@@ -22,12 +22,15 @@ class GraphWorkshop:
                 [self.dir_G.add_edge(k, node, weight = len(v) / 2) for node in v]
     
     def get_graph_properties(self, graph: nx.Graph|nx.DiGraph):
-
+        try:
+            weighs = [graph[u][v]['weight'] for u,v in graph.edges()]
+        except:
+            weighs = "N/A"
         props = {
             "pos" : nx.kamada_kawai_layout(graph),
             "edges" : graph.edges(),
             "nodes" : graph.nodes(),
-            "weights" : [graph[u][v]['weight'] for u,v in graph.edges()],
+            "weights" : weighs,
             "closensess" : nx.closeness_centrality(graph),
             "betweenness" : nx.betweenness_centrality(graph),
             "leaf_nodes" : [
