@@ -93,22 +93,23 @@ def draw_heap(nx_tree, root):
     plt.show()
     return root, tree
 
-# Створення дерева
-root = Node(0)
-root.left = Node(4)
-root.left.left = Node(5)
-root.left.right = Node(10)
-root.right = Node(1)
-root.right.left = Node(3)
-root.right.left.right = Node(13)
-root.left.left.right = Node(173)
-root.left.right.right = Node(2)
-root.left.right.left = Node(1)
+if __name__ == "__main__":
+    # Створення дерева
+    root = Node(0)
+    root.left = Node(4)
+    root.left.left = Node(5)
+    root.left.right = Node(10)
+    root.right = Node(1)
+    root.right.left = Node(3)
+    root.right.left.right = Node(13)
+    root.left.left.right = Node(173)
+    root.left.right.right = Node(2)
+    root.left.right.left = Node(1)
 
-# Відображення дерева
-tree = draw_tree(root)
+    # Відображення дерева
+    tree = draw_tree(root)
 
-# Відображення купи
-heap, heap_graph = draw_heap(tree, root)
+    # Відображення купи
+    heap, heap_graph = draw_heap(tree, root)
 
 
