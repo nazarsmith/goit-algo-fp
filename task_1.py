@@ -8,6 +8,7 @@ class Node:
 class LinkedList:
     def __init__(self):
         self.head = None
+        self.last = None
 
     def insert_at_beginning(self, data):
         new_node = Node(data)
@@ -23,6 +24,7 @@ class LinkedList:
             while cur.next:
                 cur = cur.next
             cur.next = new_node
+            self.last = cur.next
 
     def insert_after(self, prev_node: Node, data):
         if prev_node is None:
@@ -75,6 +77,42 @@ class LinkedList:
             except:
                 print("Something went wrong..")
                 break
+
+    def sort_list(self):
+        current = self.head
+        arr_rep = []
+        while current:
+            arr_rep.append(current)
+            if not current.next:
+                self.last = current
+            current = current.next
+        
+        sorted_linked_list = LinkedList()
+        
+        n = len(arr_rep)
+        gap = n // 2
+        
+        while gap > 0:
+            for i in range(gap, n):
+                temp = arr_rep[i].data
+                j = i
+                while j >= gap and arr_rep[j - gap].data > temp:
+                    arr_rep[j].data = arr_rep[j - gap].data
+                    j -= gap
+                arr_rep[j].data = temp
+            
+            gap //= 2
+
+        for i in arr_rep:
+            sorted_linked_list.insert_at_end(i.data)
+        return sorted_linked_list
+
+    @staticmethod
+    def merge_lists(list_1, list_2):
+        list_1.last.next = list_2.head
+        merged_list = list_1.sort_list()
+        return merged_list
+
             
     def search_element(self, data: int) -> Node | None:
         cur = self.head
@@ -92,6 +130,7 @@ class LinkedList:
 
 
 llist = LinkedList()
+llist_2 = LinkedList()
 
 # Вставляємо вузли в початок
 llist.insert_at_beginning(5)
@@ -102,6 +141,15 @@ llist.insert_at_beginning(15)
 llist.insert_at_end(20)
 llist.insert_at_end(25)
 
+llist_2 = LinkedList()
+llist_2.insert_at_beginning(23)
+llist_2.insert_at_beginning(13)
+llist_2.insert_at_beginning(3)
+
+# Вставляємо вузли в кінець
+llist_2.insert_at_end(7)
+llist_2.insert_at_end(88)
+
 # Друк зв'язного списку
 print("Зв'язний список:")
 llist.print_list()
@@ -110,14 +158,13 @@ llist.reverse_list()
 print("Зв'язний список (reversed):")
 llist.print_list()
 
-# Видаляємо вузол
-# llist.delete_node(10)
+print("Зв'язний список 1 (sorted):")
+sorted_llist_1 = llist.sort_list()
+sorted_llist_1.print_list()
+print("Зв'язний список 2 (sorted):")
+sorted_llist_2 = llist_2.sort_list()
+sorted_llist_2.print_list()
 
-# print("\nЗв'язний список після видалення вузла з даними 10:")
-# llist.print_list()
-
-# # Пошук елемента у зв'язному списку
-# print("\nШукаємо елемент 15:")
-# element = llist.search_element(15)
-# if element:
-#     print(element.data)
+print("Обʼєднані списки:")
+merged_list = LinkedList.merge_lists(sorted_llist_1, sorted_llist_2)
+merged_list.print_list()
