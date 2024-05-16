@@ -9,6 +9,7 @@ class Node:
     def __init__(self, key, color="skyblue"):
         self.left = None
         self.right = None
+        self.balance = 0
         self.val = key
         self.color = color  # Додатковий аргумент для зберігання кольору вузла
         self.id = str(uuid.uuid4())  # Унікальний ідентифікатор для кожного вузла
@@ -38,71 +39,48 @@ def draw_tree(tree_root):
 
     plt.figure(figsize=(8, 5))
     nx.draw(tree, pos=pos, labels=labels, arrows=False, node_size=2500, node_color=colors)
-    plt.show()
+    # plt.show()
     return tree
 
 def draw_heap(nx_tree, root):
     nodes = [node[-1]["label"] for node in nx_tree.nodes(data = True)]
-    print(nx_tree.nodes(data = True))
     heapq.heapify(nodes)
-    print(nodes)
-
     root = Node(nodes[0])
-    print(root, root.val, root.left, root.right)
 
-    def add_item_left(root, item: Node):
-        
-        value = item.val
-        print("left", root.val, root.left, root.right, value)
+    ## helper function to add nodes to a heap and draw it afterward
+    def add_item(root, item: Node):
 
-        if not root.left:
+        if root.balance == 0:
             root.left = item
-            # root.left = add_item(root.left, item)
-        elif root.left:
-            root.left = add_item_left(root.left, item)
-        # elif value >= root.left.val and value >= root.val:
-        #     print(value, "bigger than", root.left.val)
-        #     root.left = add_item_left(root.left, item)
-        # elif root.left.left and root.right.right:
-        #     root.right.left = item
-            # else:
-            #     root.left.left = item
-        return root
-    
-    def add_item_right(root, item: Node):
-        
-        value = item.val
-        print("right", root.val, root.left, root.right, value)
+            root.balance += 1
 
-        if not root.right:
+        elif root.balance == 1:
             root.right = item
-        elif root.right:
-            root.right = add_item_right(root.right, item)
-        # elif value > root.left.val and root.right:
-        #     root.left = add_item_right(root.left, item)
+            root.balance += 1
+        
+        elif root.left.balance == 0:
+            root.left = add_item(root.left, item)
+            
+        elif root.left.balance == 1:
+            root.left.right = item
+            root.left.balance += 1
+        
+        elif root.right.balance == 0:
+            root.right = add_item(root.right, item)
+        
+        elif root.right.balance == 1:
+            root.right.right = item
+            root.right.balance += 1
+
         else:
-            root.right = add_item_right(root.right, item)
+            root.left = add_item(root.left, item)
         return root
 
     for i in range(len(nodes)):
-        # print(i, nodes[i * 2 + 1])
-        # print(i, nodes[i * 2 + 2])
-        print(i)
         if i * 2 + 1 <= len(nodes) - 1:
-            root = add_item_left(root, Node(nodes[i * 2 + 1]))
+            root = add_item(root, Node(nodes[i * 2 + 1]))
         if i * 2 + 2 <= len(nodes) - 1:
-            root = add_item_right(root, Node(nodes[i * 2 + 2]))
-        # if nodes[i * 2 + 1] <= len(nodes) - 1:
-        #     root.left = None
-        # if nodes[i * 2 + 2] <= len(nodes) - 1:
-        #     root.right = None
-            # try:
-                # root.left = Node(nodes[i * 2 + 1])
-                # root.right = Node(nodes[i * 2 + 2])
-            # root = add_item(root, Node(nodes[i * 2 + 1]))
-            # root = add_item(root, Node(nodes[i * 2 + 2]))
-            # except:
-            #     continue
+            root = add_item(root, Node(nodes[i * 2 + 2]))
 
     tree = nx.DiGraph()
     pos = {root.id: (0, 0)}
@@ -113,6 +91,7 @@ def draw_heap(nx_tree, root):
     plt.figure(figsize=(8, 5))
     nx.draw(tree, pos=pos, labels=labels, arrows=False, node_size=2500, node_color=colors)
     plt.show()
+    return root, tree
 
 # Створення дерева
 root = Node(0)
@@ -121,12 +100,15 @@ root.left.left = Node(5)
 root.left.right = Node(10)
 root.right = Node(1)
 root.right.left = Node(3)
+root.right.left.right = Node(13)
+root.left.left.right = Node(173)
+root.left.right.right = Node(2)
+root.left.right.left = Node(1)
 
 # Відображення дерева
 tree = draw_tree(root)
 
-draw_heap(tree, root)
+# Відображення купи
+heap, heap_graph = draw_heap(tree, root)
 
 
-# for node in nodes:
-# print(heap)
