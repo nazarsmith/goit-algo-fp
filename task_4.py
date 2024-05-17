@@ -40,7 +40,7 @@ def draw_tree(tree_root):
     plt.figure(figsize=(8, 5))
     nx.draw(tree, pos=pos, labels=labels, arrows=False, node_size=2500, node_color=colors)
     # plt.show()
-    return tree
+    return labels, tree
 
 def draw_heap(nx_tree, root):
     nodes = [node[-1]["label"] for node in nx_tree.nodes(data = True)]
@@ -81,9 +81,10 @@ if __name__ == "__main__":
     root.left.right.left = Node(1)
 
     # Відображення дерева
-    tree = draw_tree(root)
+    _, tree = draw_tree(root)
 
     # Відображення купи
     heap, heap_graph = draw_heap(tree, root)
+    
 
 
