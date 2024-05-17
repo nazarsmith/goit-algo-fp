@@ -1,27 +1,35 @@
 from task_4 import *
 from collections import deque
-from matplotlib import colors
+from matplotlib import colors as clr
 from copy import deepcopy
 
-def dfs_recursive(graph, vertex, visited=None, color = [0.25, 0.1, 0.15]):
+def get_specs(graph):
+    colors = [specs['color'] for _, specs in graph.items()]
+    labels = {node: specs['label'] for node, specs in graph.items()}
+    return colors, labels
+
+def dfs_recursive(graph, vertex, visited = None, color = [0.5, 0.5, 0.5]):
     if visited is None:
-        visited = set()
-    visited.add(vertex)
-    print(graph[vertex]["label"], end=' ')  # Відвідуємо вершину
-    updated_colors = [c + 0.017 for c in color]
-    graph[vertex]["color"] = colors.to_hex(updated_colors)
+        visited = []
+    visited.append(vertex)
+    color[0] -= 0.025
+    color[1] += 0.025
+    color[2] -= 0.025
+    graph[vertex]["color"] = clr.to_hex(color)
     for neighbor in graph[vertex]["connected_edges"]:
         try:
             if neighbor not in visited:
-                dfs_recursive(graph, neighbor, visited, updated_colors)
+                dfs_recursive(graph, neighbor, visited, color)
         except:
             pass
+    colors, labels = get_specs(graph)
 
+    return visited, colors, labels
 
-def bfs_recursive(graph, queue, visited=None):
+def bfs_recursive(graph, queue, visited = None, color = [0.5, 0.5, 0.5]):
     # Перевіряємо, чи існує множина відвіданих вершин, якщо ні, то ініціалізуємо нову
     if not visited:
-        visited = set()
+        visited = []
     # Якщо черга порожня, завершуємо рекурсію
     if not queue:
         return
@@ -29,18 +37,20 @@ def bfs_recursive(graph, queue, visited=None):
     vertex = queue.popleft()
     # Перевіряємо, чи відвідували раніше дану вершину
     if vertex not in visited:
-        # Якщо не відвідували, друкуємо вершину
-        print(vertex, end=" ")
         # Додаємо вершину до множини відвіданих вершин.
-        visited.add(vertex)
+        visited.append(vertex)
         # Додаємо невідвіданих сусідів даної вершини в кінець черги.
-        try:
-            queue.extend(set(graph[vertex]) - visited)
-        except:
-            pass
+        color[0] -= 0.025
+        color[1] += 0.025
+        color[2] -= 0.025
+        graph[vertex]["color"] = clr.to_hex(color)
+        queue.extend(set(graph[vertex]["connected_edges"]) - set(visited))
     # Рекурсивний виклик функції з тією ж чергою та множиною відвіданих вершин
-    bfs_recursive(graph, queue, visited)
+    bfs_recursive(graph, queue, visited, color = color)
+    
+    colors, labels = get_specs(graph)
 
+    return visited, colors, labels
 
 
 if __name__ == "__main__":
@@ -56,19 +66,22 @@ if __name__ == "__main__":
     root.left.right.right = Node(2)
     root.left.right.left = Node(1)
 
-    # Відображення дерева
+    # draw original binary trees
     labels, tree = draw_tree(root)
-    # print(labels)
 
+    # get the nodes of the tree and analyze
     nodes = tree.nodes(data = True)
     node_edge_dict = {}
     for node in nodes:
+        # get the edges that connect nodes
         edges = list(tree.edges(node[0]))
+        # create template for future DFS/BFS graph specs
         graph = {
             "connected_edges": [],
             "label": None,
             "color": "#350917"
         }
+        # update the specs
         if not edges:
             node_edge_dict[node[0]] = graph
             node_edge_dict[node[0]]["label"] = labels[node[0]]
@@ -79,18 +92,19 @@ if __name__ == "__main__":
             graph["label"] = labels[node[0]]
             node_edge_dict[node[0]] = graph
     
+    # make a copy of the nodes/edges to illustrate BFS
     node_edge_dict_bfs = deepcopy(node_edge_dict)
-        # connected_edges = []
 
-    for k, v in node_edge_dict.items():
-        print(k, v)
+    # do the DFS search
+    visited, colors, labels = dfs_recursive(node_edge_dict, list(node_edge_dict.keys())[0])
+    visited = [labels[node] for node in visited]
+    print("Visited order (DFS):", visited)
+    # draw the tree after DFS was applied
+    draw_tree(root, colors = colors, labels = labels, title = "DFS")
 
-    dfs_recursive(node_edge_dict, list(node_edge_dict.keys())[0])
-    # bfs_recursive(node_edge_dict, deque([0]))
-
-    for k, v in node_edge_dict.items():
-        print(k, v)
-    
-    print("BFS original")
-    for k, v in node_edge_dict_bfs.items():
-        print(k, v)
+    # do the BFS search
+    visited_bfs, colors, labels = bfs_recursive(node_edge_dict_bfs, deque([list(node_edge_dict_bfs.keys())[0]]))
+    visited_bfs = [labels[node] for node in visited_bfs]
+    print("Visited order (BFS):", visited_bfs)
+    # draw the tree after BFS was applied   
+    draw_tree(root, colors = colors, labels = labels, title = "BFS (right to left)")
