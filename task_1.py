@@ -125,7 +125,7 @@ class LinkedList:
     def print_list(self):
         current = self.head
         while current:
-            print(current.data)
+            print(current.data, end = " ")
             current = current.next
 
 
@@ -151,20 +151,25 @@ llist_2.insert_at_end(7)
 llist_2.insert_at_end(88)
 
 # Друк зв'язного списку
-print("Зв'язний список:")
+print("Зв'язний список:", end = " ")
 llist.print_list()
 llist.reverse_list()
+print("\n")
 
-print("Зв'язний список (reversed):")
+print("Зв'язний список (reversed):", end = " ")
 llist.print_list()
+print("\n")
 
-print("Зв'язний список 1 (sorted):")
+print("Зв'язний список 1 (sorted):", end = " ")
 sorted_llist_1 = llist.sort_list()
 sorted_llist_1.print_list()
-print("Зв'язний список 2 (sorted):")
+print("\n")
+
+print("Зв'язний список 2 (sorted):", end = " ")
 sorted_llist_2 = llist_2.sort_list()
 sorted_llist_2.print_list()
+print("\n")
 
-print("Обʼєднані списки:")
+print("Обʼєднані списки:", end = " ")
 merged_list = LinkedList.merge_lists(sorted_llist_1, sorted_llist_2)
 merged_list.print_list()
