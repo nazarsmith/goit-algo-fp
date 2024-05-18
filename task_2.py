@@ -1,34 +1,53 @@
 import turtle
 import math
 
-def koch_curve(t, order, size):
-    print(size)
+# Set up the screen
+screen = turtle.Screen()
+screen.bgcolor("white")
+
+# Set up the turtle
+t = turtle.Turtle()
+t.speed(1)  # Fastest drawing speed
+
+def draw_tree(length, order):
     if order == 0:
-        
-        print("move", size / 3)
-        t.forward(size / 3)
-    else:
-        for angle in [30, 180, 120, 180]:
-            koch_curve(t, order - 1, size / (math.sqrt(size) / 2))
-            print(f"turn {angle}")
-            t.left(angle)
+        return
+    
+    # Draw the trunk
+    t.forward(length)
+    # Save the current position and heading
+    pos = t.position()
+    heading = t.heading()
+    
+    # Left branch
+    t.left(degree)
+    draw_tree(length * math.sqrt(2) / 2, order - 1)
 
-def draw_koch_curve(order, size=30000):
-    window = turtle.Screen()
-    window.bgcolor("white")
+    # Restore the position and heading
+    t.setposition(pos)
+    t.setheading(heading)
+    
+    # Right branch
+    t.right(degree)
+    draw_tree(length * math.sqrt(2) / 2, order - 1)
+    
+    # Restore the position and heading
+    t.setposition(pos)
+    t.setheading(heading)
 
-    t = turtle.Turtle()
-    t.speed(1)  
-    t.penup()
-    t.goto(0 / 3, 0)
-    t.pendown()
-    t.left(90)
+# Initial parameters
+initial_length = 100
+initial_order = 7
+degree = 35
 
-    for _ in range(2):
-        koch_curve(t, order, size)
-        print("turn wha")
-        t.right(180)
-        # t.forward(size / 3)
-    window.mainloop()
+# Move the turtle to the starting position
+t.penup()
+t.goto(0, -200)
+t.left(90)
+t.pendown()
 
-draw_koch_curve(2) ## order
+# Draw the tree
+draw_tree(initial_length, initial_order)
+
+# Finish up
+turtle.done()
