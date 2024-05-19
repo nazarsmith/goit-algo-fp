@@ -16,6 +16,8 @@ def task_7(num_experiments = 1000):
     for i in range(2, 13):
         probabilities.append((i, probability(sums, sought_sum = i)))
 
+    for p in probabilities:
+        print(f"{p[0]}: {p[1]}")
     return probabilities
 
 if __name__ == "__main__":
